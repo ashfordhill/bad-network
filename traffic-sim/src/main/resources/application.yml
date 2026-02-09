@@ -1,0 +1,17 @@
+# Traffic simulator configuration
+traffic:
+  entity-count: 10
+  publish-interval-ms: 1000
+  instance-id: ${HOSTNAME:}
+  kafka:
+    topic: traffic-events
+  path:
+    shape: circle
+    center-lat: 40.0
+    center-lon: -74.0
+    radius-km: 0.5
+
+# Kafka (override via SPRING_KAFKA_BOOTSTRAP_SERVERS in Docker)
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
