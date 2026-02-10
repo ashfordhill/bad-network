@@ -1,0 +1,18 @@
+# Traffic encoder configuration
+encoder:
+  kafka:
+    source-topic: traffic-events
+    original-topic: traffic-original
+    delta-topic: traffic-delta
+    consumer-group-id: traffic-encoder
+
+# Kafka (override via SPRING_KAFKA_BOOTSTRAP_SERVERS in Docker)
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+
+logging:
+  level:
+    org.springframework.kafka: DEBUG
+    org.apache.kafka: DEBUG
+    com.badnetwork.trafficencoder: DEBUG

@@ -51,7 +51,7 @@ public class TrafficProducer {
         log.info("Starting traffic producer: instance-id={}, entity-count={}, interval={}ms, topic={}",
                 effectiveInstanceId, entityCount, intervalMs, topic);
 
-        scheduler = Executors.newScheduledThreadPool(entityCount, Thread.ofVirtual().factory());
+        scheduler = Executors.newScheduledThreadPool(Math.min(entityCount, 10));
 
         for (int i = 0; i < entityCount; i++) {
             final int entityIndex = i;
@@ -65,7 +65,7 @@ public class TrafficProducer {
             );
         }
 
-        log.info("Scheduled {} virtual threads for traffic entities", entityCount);
+        log.info("Scheduled {} entities across thread pool", entityCount);
     }
 
     @PreDestroy
