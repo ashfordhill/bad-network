@@ -1,0 +1,20 @@
+# Traffic scrambler configuration
+scrambler:
+  kafka:
+    source-topic: traffic-delta
+    chaos-topic: traffic-chaos
+    consumer-group-id: traffic-scrambler
+
+server:
+  port: 8082
+
+# Kafka (override via SPRING_KAFKA_BOOTSTRAP_SERVERS in Docker)
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+
+logging:
+  level:
+    org.springframework.kafka: DEBUG
+    org.apache.kafka: DEBUG
+    com.badnetwork.trafficscrambler: DEBUG
