@@ -1,4 +1,4 @@
-name: Render and Commit Excalidraw Files
+name: Render and Commit Excalidraw Files As PNGs
 
 on:
   push:

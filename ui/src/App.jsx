@@ -4,20 +4,17 @@ import {
   AppBar,
   Toolbar,
   Typography,
-  Switch,
-  FormControlLabel,
-  TextField,
-  Button,
   Drawer,
   IconButton,
   Chip,
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+import SettingsIcon from '@mui/icons-material/Settings';
 import { CesiumMapProvider } from './services/map/CesiumMapProvider';
 import { EntityManager } from './services/entityManager';
 import websocketService from './services/websocket';
 import MapView from './components/MapView';
 import ChaosControlPanel from './components/ChaosControlPanel';
+import ConnectionPanel from './components/ConnectionPanel';
 import './App.css';
 
 function App() {
@@ -26,9 +23,9 @@ function App() {
   const [useDelta, setUseDelta] = useState(false);
   const [mapOptimization, setMapOptimization] = useState(false);
   const [websocketUrl, setWebsocketUrl] = useState(
-    import.meta.env.VITE_WEBSOCKET_URL || 'http://localhost:3001'
+    import.meta.env.VITE_WEBSOCKET_URL || 'ws://localhost:7990/traffic'
   );
-  const [topic, setTopic] = useState(import.meta.env.VITE_TOPIC || 'traffic');
+  const [topic, setTopic] = useState(import.meta.env.VITE_TOPIC || 'traffic-delta');
   const [connected, setConnected] = useState(false);
   const [entityCount, setEntityCount] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -71,7 +68,7 @@ function App() {
     if (connected) {
       websocketService.disconnect();
     } else {
-      websocketService.connect(websocketUrl, topic);
+      websocketService.connect(websocketUrl);
     }
   };
 
@@ -89,17 +86,9 @@ function App() {
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
       <AppBar position="static">
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            edge="start"
-            onClick={() => setDrawerOpen(true)}
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
+        <Toolbar variant="dense">
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Traffic Visualization
           </Typography>
@@ -113,87 +102,50 @@ function App() {
             label={`Entities: ${entityCount}`}
             color="primary"
             size="small"
+            sx={{ mr: 2 }}
           />
+          <IconButton
+            color="inherit"
+            edge="end"
+            onClick={() => setDrawerOpen(true)}
+          >
+            <SettingsIcon />
+          </IconButton>
         </Toolbar>
       </AppBar>
 
-      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <Box sx={{ flex: 1, position: 'relative' }}>
-          <MapView mapProvider={mapProvider} />
-        </Box>
+      <Box sx={{ flex: 1, position: 'relative', minHeight: 0 }}>
+        <MapView mapProvider={mapProvider} />
+      </Box>
 
-        <Box
-          sx={{
-            p: 2,
-            bgcolor: 'background.paper',
-            borderTop: 1,
-            borderColor: 'divider',
-            display: 'flex',
-            gap: 2,
-            flexWrap: 'wrap',
-            alignItems: 'center',
-          }}
-        >
-          <TextField
-            size="small"
-            label="WebSocket URL"
-            value={websocketUrl}
-            onChange={(e) => setWebsocketUrl(e.target.value)}
-            disabled={connected}
-            sx={{ minWidth: 250 }}
-          />
-          
-          <TextField
-            size="small"
-            label="Topic"
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            sx={{ minWidth: 150 }}
-          />
-          
-          <Button
-            variant="contained"
-            onClick={handleConnect}
-            color={connected ? 'error' : 'primary'}
-          >
-            {connected ? 'Disconnect' : 'Connect'}
-          </Button>
-
-          {connected && (
-            <Button variant="outlined" onClick={handleTopicChange}>
-              Subscribe to Topic
-            </Button>
-          )}
-
-          <Button variant="outlined" onClick={handleClearEntities}>
-            Clear Entities
-          </Button>
-
-          <FormControlLabel
-            control={
-              <Switch
-                checked={useDelta}
-                onChange={(e) => setUseDelta(e.target.checked)}
-              />
-            }
-            label="Use Delta Traffic"
-          />
-
-          <FormControlLabel
-            control={
-              <Switch
-                checked={mapOptimization}
-                onChange={(e) => setMapOptimization(e.target.checked)}
-              />
-            }
-            label="Map Optimization"
-          />
-        </Box>
+      <Box
+        sx={{
+          height: '250px',
+          borderTop: 1,
+          borderColor: 'divider',
+          bgcolor: 'background.paper',
+          overflow: 'hidden',
+        }}
+      >
+        <ChaosControlPanel />
       </Box>
 
       <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
-        <Box sx={{ width: 400, p: 2 }}>
-          <ChaosControlPanel />
+        <Box sx={{ width: 350 }}>
+          <ConnectionPanel
+            websocketUrl={websocketUrl}
+            setWebsocketUrl={setWebsocketUrl}
+            topic={topic}
+            setTopic={setTopic}
+            connected={connected}
+            onConnect={handleConnect}
+            onSubscribeTopic={handleTopicChange}
+            useDelta={useDelta}
+            setUseDelta={setUseDelta}
+            mapOptimization={mapOptimization}
+            setMapOptimization={setMapOptimization}
+            onClearEntities={handleClearEntities}
+          />
         </Box>
       </Drawer>
     </Box>

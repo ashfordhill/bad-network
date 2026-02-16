@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import {
   Box,
-  Paper,
   Typography,
   TextField,
   Button,
@@ -90,16 +89,28 @@ export default function ChaosControlPanel() {
   };
 
   return (
-    <Paper elevation={3} sx={{ p: 2, height: '100%', overflow: 'auto' }}>
-      <Typography variant="h6" gutterBottom>
-        Chaos Configuration
-      </Typography>
+    <Box sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+        <Typography variant="h6">
+          Chaos Configuration
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button size="small" variant="contained" color="primary" onClick={handleApply}>
+            Apply
+          </Button>
+          <Button size="small" variant="outlined" color="secondary" onClick={handleReset}>
+            Reset
+          </Button>
+        </Box>
+      </Box>
       
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
+      <Box sx={{ flex: 1, overflow: 'auto' }}>
+        <Grid container spacing={1.5}>
+        <Grid item xs={6} sm={3} md={2}>
           <TextField
             fullWidth
-            label="Loss Percent"
+            size="small"
+            label="Loss %"
             type="number"
             value={config.lossPercent}
             onChange={(e) => handleChange('lossPercent', parseFloat(e.target.value))}
@@ -107,10 +118,11 @@ export default function ChaosControlPanel() {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={6} sm={3} md={2}>
           <TextField
             fullWidth
-            label="Out of Order Percent"
+            size="small"
+            label="Out of Order %"
             type="number"
             value={config.outOfOrderPercent}
             onChange={(e) => handleChange('outOfOrderPercent', parseFloat(e.target.value))}
@@ -118,10 +130,11 @@ export default function ChaosControlPanel() {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={6} sm={3} md={2}>
           <TextField
             fullWidth
-            label="Burst Loss Seconds"
+            size="small"
+            label="Burst Loss (s)"
             type="number"
             value={config.burstLossSeconds}
             onChange={(e) => handleChange('burstLossSeconds', parseInt(e.target.value))}
@@ -129,10 +142,11 @@ export default function ChaosControlPanel() {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={6} sm={3} md={2}>
           <TextField
             fullWidth
-            label="Burst Loss Every Seconds"
+            size="small"
+            label="Burst Every (s)"
             type="number"
             value={config.burstLossEverySeconds}
             onChange={(e) => handleChange('burstLossEverySeconds', parseInt(e.target.value))}
@@ -140,9 +154,10 @@ export default function ChaosControlPanel() {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={6} sm={3} md={2}>
           <TextField
             fullWidth
+            size="small"
             label="Jitter (ms)"
             type="number"
             value={config.jitterMs}
@@ -151,10 +166,11 @@ export default function ChaosControlPanel() {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={6} sm={3} md={2}>
           <TextField
             fullWidth
-            label="Fixed Latency (ms)"
+            size="small"
+            label="Latency (ms)"
             type="number"
             value={config.fixedLatencyMs}
             onChange={(e) => handleChange('fixedLatencyMs', parseInt(e.target.value))}
@@ -162,10 +178,11 @@ export default function ChaosControlPanel() {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={6} sm={3} md={2}>
           <TextField
             fullWidth
-            label="Bandwidth (Bytes/sec)"
+            size="small"
+            label="Bandwidth (B/s)"
             type="number"
             value={config.bandwidthBytesPerSec}
             onChange={(e) => handleChange('bandwidthBytesPerSec', parseInt(e.target.value))}
@@ -173,10 +190,11 @@ export default function ChaosControlPanel() {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={6} sm={3} md={2}>
           <TextField
             fullWidth
-            label="Max Queue Size"
+            size="small"
+            label="Queue Size"
             type="number"
             value={config.maxQueueSize}
             onChange={(e) => handleChange('maxQueueSize', parseInt(e.target.value))}
@@ -184,25 +202,26 @@ export default function ChaosControlPanel() {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
-          <FormControl fullWidth>
+        <Grid item xs={6} sm={3} md={2}>
+          <FormControl fullWidth size="small">
             <InputLabel>Drop Policy</InputLabel>
             <Select
               value={config.dropPolicy}
               label="Drop Policy"
               onChange={(e) => handleChange('dropPolicy', e.target.value)}
             >
-              <MenuItem value="DROP_OLDEST">Drop Oldest</MenuItem>
-              <MenuItem value="DROP_NEWEST">Drop Newest</MenuItem>
-              <MenuItem value="COALESCE_BY_ID">Coalesce By ID</MenuItem>
+              <MenuItem value="DROP_OLDEST">Oldest</MenuItem>
+              <MenuItem value="DROP_NEWEST">Newest</MenuItem>
+              <MenuItem value="COALESCE_BY_ID">Coalesce</MenuItem>
             </Select>
           </FormControl>
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={6} sm={3} md={2}>
           <TextField
             fullWidth
-            label="Corrupt Coordinates Percent"
+            size="small"
+            label="Corrupt %"
             type="number"
             value={config.corruptCoordinatesPercent}
             onChange={(e) => handleChange('corruptCoordinatesPercent', parseFloat(e.target.value))}
@@ -210,10 +229,11 @@ export default function ChaosControlPanel() {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={6} sm={3} md={2}>
           <TextField
             fullWidth
-            label="Max Corruption (meters)"
+            size="small"
+            label="Max Corrupt (m)"
             type="number"
             value={config.maxCorruptionMeters}
             onChange={(e) => handleChange('maxCorruptionMeters', parseFloat(e.target.value))}
@@ -221,81 +241,68 @@ export default function ChaosControlPanel() {
           />
         </Grid>
 
-        <Grid item xs={12}>
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <Button variant="contained" color="primary" onClick={handleApply}>
-              Apply Configuration
-            </Button>
-            <Button variant="outlined" color="secondary" onClick={handleReset}>
-              Reset to Defaults
-            </Button>
-          </Box>
-        </Grid>
-
         {metrics && (
           <>
             <Grid item xs={12}>
-              <Divider sx={{ my: 1 }} />
-              <Typography variant="h6" gutterBottom>
-                Metrics
-              </Typography>
+              <Divider sx={{ my: 0.5 }} />
             </Grid>
 
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="body2" color="text.secondary">
+            <Grid item xs={6} sm={3} md={2}>
+              <Typography variant="caption" color="text.secondary">
                 Dropped: <strong>{metrics.dropped}</strong>
               </Typography>
             </Grid>
 
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="body2" color="text.secondary">
+            <Grid item xs={6} sm={3} md={2}>
+              <Typography variant="caption" color="text.secondary">
                 Reordered: <strong>{metrics.reordered}</strong>
               </Typography>
             </Grid>
 
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="body2" color="text.secondary">
+            <Grid item xs={6} sm={3} md={2}>
+              <Typography variant="caption" color="text.secondary">
                 Queued: <strong>{metrics.queued}</strong>
               </Typography>
             </Grid>
 
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="body2" color="text.secondary">
-                Bytes/sec: <strong>{metrics.bytesPerSec}</strong>
+            <Grid item xs={6} sm={3} md={2}>
+              <Typography variant="caption" color="text.secondary">
+                B/s: <strong>{metrics.bytesPerSec}</strong>
               </Typography>
             </Grid>
 
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="body2" color="text.secondary">
-                Avg Latency: <strong>{metrics.avgLatencyMs}ms</strong>
+            <Grid item xs={6} sm={3} md={2}>
+              <Typography variant="caption" color="text.secondary">
+                Avg: <strong>{metrics.avgLatencyMs}ms</strong>
               </Typography>
             </Grid>
 
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="body2" color="text.secondary">
-                P95 Latency: <strong>{metrics.p95LatencyMs}ms</strong>
+            <Grid item xs={6} sm={3} md={2}>
+              <Typography variant="caption" color="text.secondary">
+                P95: <strong>{metrics.p95LatencyMs}ms</strong>
               </Typography>
             </Grid>
 
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="body2" color="text.secondary">
+            <Grid item xs={6} sm={3} md={2}>
+              <Typography variant="caption" color="text.secondary">
                 Corrupted: <strong>{metrics.corrupted}</strong>
               </Typography>
             </Grid>
           </>
         )}
-      </Grid>
+        </Grid>
+      </Box>
 
       <Snackbar
         open={snackbar.open}
         autoHideDuration={3000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
         <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </Paper>
+    </Box>
   );
 }

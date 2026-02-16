@@ -1,26 +1,27 @@
 services:
-  kafka:
-    image: apache/kafka:latest
+  ui:
+    image: ghcr.io/ashfordhill/bad-network-ui:latest
     ports:
-      - "9092:9092"
+      - "3000:80"
     environment:
-      KAFKA_NODE_ID: 1
-      KAFKA_PROCESS_ROLES: broker,controller
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      VITE_WEBSOCKET_URL: ws://traffic2ui:7990/traffic
+      VITE_TOPIC: traffic-delta
+      VITE_API_URL: http://localhost:8082
+    depends_on:
+      - traffic-scrambler
+      - traffic2ui
 
-  traffic-sim:
-    image: ghcr.io/ashfordhill/bad-network-traffic-sim:latest
+  traffic-scrambler:
+    image: ghcr.io/ashfordhill/bad-network-traffic-scrambler:latest
+    ports:
+      - "8082:8082"
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       - kafka
+      - traffic-encoder
     restart: on-failure
+    entrypoint: ["/bin/sh", "-c", "sleep 20 && java -jar app.jar"]
 
   traffic-encoder:
     image: ghcr.io/ashfordhill/bad-network-traffic-encoder:latest
@@ -32,12 +33,22 @@ services:
     restart: on-failure
     entrypoint: ["/bin/sh", "-c", "sleep 15 && java -jar app.jar"]
 
-  traffic-scrambler:
-    image: ghcr.io/ashfordhill/bad-network-traffic-scrambler:latest
-    ports:
-      - "8082:8082"
+  traffic-sim:
+    image: ghcr.io/ashfordhill/bad-network-traffic-sim:latest
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      - kafka
+    restart: on-failure
+
+  traffic2ui:
+    image: ghcr.io/ashfordhill/bad-network-traffic2ui:latest
+    ports:
+      - "7990:7990"
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SERVER_PORT: "7990"
+      KAFKA_TOPIC: traffic-delta
     depends_on:
       - kafka
       - traffic-encoder
@@ -54,9 +65,17 @@ services:
     depends_on:
       - kafka
 
-  ui:
-    image: ghcr.io/ashfordhill/bad-network-ui:latest
+  kafka:
+    image: apache/kafka:latest
     ports:
-      - "3000:80"
-    depends_on:
-      - traffic-scrambler
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1

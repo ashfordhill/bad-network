@@ -1,0 +1,25 @@
+# Traffic2UI WebSocket service configuration
+traffic2ui:
+  kafka:
+    topic: ${KAFKA_TOPIC:traffic-delta}
+    consumer-group-id: traffic2ui
+  websocket:
+    endpoint: /traffic
+
+server:
+  port: ${SERVER_PORT:7990}
+
+# Kafka (override via SPRING_KAFKA_BOOTSTRAP_SERVERS in Docker)
+spring:
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      auto-offset-reset: latest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+logging:
+  level:
+    org.springframework.kafka: INFO
+    org.apache.kafka: WARN
+    com.badnetwork.traffic2ui: INFO

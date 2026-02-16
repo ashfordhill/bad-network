@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/chaos")
+@CrossOrigin(origins = "http://localhost:3000")
 public class ChaosController {
 
     private static final Logger log = LoggerFactory.getLogger(ChaosController.class);

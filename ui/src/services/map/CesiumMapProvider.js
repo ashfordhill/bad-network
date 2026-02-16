@@ -10,10 +10,13 @@ export class CesiumMapProvider extends MapProvider {
   }
 
   initialize() {
-    Cesium.Ion.defaultAccessToken = import.meta.env.VITE_CESIUM_TOKEN || '';
+    const token = import.meta.env.VITE_CESIUM_TOKEN;
+    if (token) {
+      Cesium.Ion.defaultAccessToken = token;
+    }
 
     this.viewer = new Cesium.Viewer(this.containerId, {
-      terrainProvider: Cesium.createWorldTerrain(),
+      terrainProvider: token ? Cesium.createWorldTerrain() : undefined,
       timeline: false,
       animation: false,
       baseLayerPicker: false,

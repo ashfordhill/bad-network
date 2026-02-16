@@ -1,70 +1,97 @@
-import { io } from 'socket.io-client';
-
 export class WebSocketService {
   constructor() {
-    this.socket = null;
+    this.ws = null;
     this.connected = false;
     this.listeners = new Map();
+    this.reconnectAttempts = 0;
+    this.maxReconnectAttempts = Infinity;
+    this.reconnectDelay = 1000;
+    this.currentUrl = null;
   }
 
-  connect(url, topic) {
-    if (this.socket) {
+  connect(url) {
+    if (this.ws) {
       this.disconnect();
     }
 
-    this.socket = io(url, {
-      reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
-      reconnectionAttempts: Infinity,
-    });
+    if (!url) {
+      console.error('WebSocket URL is required');
+      return null;
+    }
 
-    this.socket.on('connect', () => {
-      console.log('WebSocket connected');
-      this.connected = true;
-      this.emitToListeners('connect', { connected: true });
-      
-      if (topic) {
-        this.socket.emit('subscribe', { topic });
-      }
-    });
+    // Convert http/https URLs to ws/wss
+    const wsUrl = url.replace(/^http:/, 'ws:').replace(/^https:/, 'wss:');
+    this.currentUrl = wsUrl;
+    this.reconnectAttempts = 0;
 
-    this.socket.on('disconnect', () => {
-      console.log('WebSocket disconnected');
-      this.connected = false;
-      this.emitToListeners('disconnect', { connected: false });
-    });
+    try {
+      this.ws = new WebSocket(wsUrl);
 
-    this.socket.on('traffic', (data) => {
-      this.emitToListeners('traffic', data);
-    });
+      this.ws.onopen = () => {
+        console.log('WebSocket connected to', wsUrl);
+        this.connected = true;
+        this.reconnectAttempts = 0;
+        this.emitToListeners('connect', { connected: true });
+      };
 
-    this.socket.on('error', (error) => {
-      console.error('WebSocket error:', error);
+      this.ws.onmessage = (event) => {
+        try {
+          const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+          this.emitToListeners('traffic', data);
+        } catch (error) {
+          console.error('Error parsing WebSocket message:', error);
+          this.emitToListeners('traffic', event.data);
+        }
+      };
+
+      this.ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+        this.emitToListeners('error', error);
+      };
+
+      this.ws.onclose = () => {
+        console.log('WebSocket disconnected');
+        this.connected = false;
+        this.emitToListeners('disconnect', { connected: false });
+        this.attemptReconnect();
+      };
+
+      return this.ws;
+    } catch (error) {
+      console.error('Failed to create WebSocket:', error);
       this.emitToListeners('error', error);
-    });
+      return null;
+    }
+  }
 
-    return this.socket;
+  attemptReconnect() {
+    if (this.reconnectAttempts < this.maxReconnectAttempts && this.currentUrl) {
+      this.reconnectAttempts++;
+      const delay = Math.min(this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1), 5000);
+      console.log(`Attempting to reconnect (attempt ${this.reconnectAttempts}) in ${delay}ms...`);
+      setTimeout(() => {
+        this.connect(this.currentUrl);
+      }, delay);
+    }
   }
 
   disconnect() {
-    if (this.socket) {
-      this.socket.disconnect();
-      this.socket = null;
+    this.maxReconnectAttempts = 0;
+    if (this.ws) {
+      this.ws.close();
+      this.ws = null;
       this.connected = false;
     }
   }
 
   subscribeTopic(topic) {
-    if (this.socket && this.connected) {
-      this.socket.emit('subscribe', { topic });
-    }
+    // Native WebSocket doesn't support subscribe operation
+    console.log('Topic subscription not supported for native WebSocket. Connected to configured endpoint.');
   }
 
   unsubscribeTopic(topic) {
-    if (this.socket && this.connected) {
-      this.socket.emit('unsubscribe', { topic });
-    }
+    // Native WebSocket doesn't support unsubscribe operation
+    console.log('Topic unsubscription not supported for native WebSocket.');
   }
 
   on(event, callback) {

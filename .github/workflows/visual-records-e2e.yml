@@ -1,0 +1,78 @@
+name: UI E2E - Screenshot Test
+
+on:
+  workflow_run:
+    workflows: ["Build and Publish Docker Images"]
+    types:
+      - completed
+
+jobs:
+  test-ui-screenshot:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Start Docker Compose services
+        run: docker compose up -d
+
+      - name: Wait for services to be healthy
+        run: |
+          echo "Waiting for UI service to be ready on port 3000..."
+          max_attempts=60
+          attempt=0
+          until curl -f http://localhost:3000 > /dev/null 2>&1 || [ $attempt -eq $max_attempts ]; do
+            attempt=$((attempt + 1))
+            echo "Attempt $attempt/$max_attempts - Service not ready yet, waiting..."
+            sleep 2
+          done
+          
+          if [ $attempt -eq $max_attempts ]; then
+            echo "Services failed to start within the timeout period"
+            docker compose logs
+            exit 1
+          fi
+          
+          echo "Services are ready!"
+
+      - name: Display running containers
+        run: docker compose ps
+
+      - name: Capture Kafka UI State
+        uses: ashfordhill/puppeteer-action@v8
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          url: http://localhost:8080/ui/clusters/local/all-topics
+          folder: timeline
+          base_screenshot_name: kafka-ui
+          make_gif: false
+          auto_screenshots: true
+
+      - name: Capture Traffic UI State
+        uses: ashfordhill/puppeteer-action@v8
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          url: http://localhost:8080/ui/clusters/local/all-topics
+          folder: timeline
+          base_screenshot_name: traffic-ui
+          make_gif: false
+          auto_screenshots: true
+          video_format: gif
+          video_duration: 10
+          video_speed_seconds: 2
+          base_video_name: traffic-ui-video
+  
+      - name: Commit visual records
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "chore: update visual records [no ci]"
+
+      - name: Cleanup - Stop Docker Compose services
+        if: always()
+        run: docker compose down
