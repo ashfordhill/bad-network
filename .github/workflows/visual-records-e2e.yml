@@ -1,10 +1,11 @@
-name: UI E2E - Screenshot Test
+name: UI E2E - Visual Records
 
 on:
   workflow_run:
-    workflows: ["Build and Publish Docker Images"]
+    workflows: ["Build and Publish Docker Images To GHCR"]
     types:
       - completed
+  workflow_dispatch:
 
 jobs:
   test-ui-screenshot:
@@ -40,6 +41,7 @@ jobs:
       - name: Display running containers
         run: docker compose ps
 
+        # TODO: Add new Action: https://github.com/ashfordhill/wait-kafka-action
       - name: Capture Kafka UI State
         uses: ashfordhill/puppeteer-action@v8
         env:

@@ -12,7 +12,7 @@
       "height": 76.79998779296875,
       "angle": 0,
       "strokeColor": "#1e1e1e",
-      "backgroundColor": "transparent",
+      "backgroundColor": "#ffffff",
       "fillStyle": "solid",
       "strokeWidth": 4,
       "strokeStyle": "solid",
@@ -25,8 +25,8 @@
         "type": 3
       },
       "seed": 140373740,
-      "version": 562,
-      "versionNonce": 69305196,
+      "version": 563,
+      "versionNonce": 1870704234,
       "isDeleted": false,
       "boundElements": [
         {
@@ -38,7 +38,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1770687348082,
+      "updated": 1771209577543,
       "link": null,
       "locked": false
     },
@@ -88,7 +88,7 @@
       "height": 76.79998779296875,
       "angle": 0,
       "strokeColor": "#1e1e1e",
-      "backgroundColor": "transparent",
+      "backgroundColor": "#ffffff",
       "fillStyle": "solid",
       "strokeWidth": 4,
       "strokeStyle": "solid",
@@ -101,8 +101,8 @@
         "type": 3
       },
       "seed": 71874796,
-      "version": 853,
-      "versionNonce": 1879678188,
+      "version": 854,
+      "versionNonce": 1602563702,
       "isDeleted": false,
       "boundElements": [
         {
@@ -118,7 +118,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1770778280389,
+      "updated": 1771209580826,
       "link": null,
       "locked": false
     },
@@ -1247,7 +1247,7 @@
       "height": 76.79998779296875,
       "angle": 0,
       "strokeColor": "#1e1e1e",
-      "backgroundColor": "transparent",
+      "backgroundColor": "#ffffff",
       "fillStyle": "solid",
       "strokeWidth": 4,
       "strokeStyle": "solid",
@@ -1260,8 +1260,8 @@
         "type": 3
       },
       "seed": 761895276,
-      "version": 774,
-      "versionNonce": 349726420,
+      "version": 775,
+      "versionNonce": 194545910,
       "isDeleted": false,
       "boundElements": [
         {
@@ -1273,7 +1273,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1770778921959,
+      "updated": 1771209584126,
       "link": null,
       "locked": false
     },
@@ -3191,7 +3191,7 @@
     "gridSize": 20,
     "gridStep": 5,
     "gridModeEnabled": false,
-    "viewBackgroundColor": "#ffffff",
+    "viewBackgroundColor": "#38383d",
     "lockedMultiSelections": {}
   },
   "files": {}
