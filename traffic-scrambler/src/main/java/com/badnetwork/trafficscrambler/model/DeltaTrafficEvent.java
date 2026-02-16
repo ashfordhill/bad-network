@@ -14,4 +14,6 @@ public class DeltaTrafficEvent {
     private double deltaLong;
     private long timestamp;
     private boolean newEntity;
+    private Double lat;
+    private Double lon;
 }

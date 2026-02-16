@@ -79,7 +79,9 @@ public class TrafficEncoderService {
                 deltaLat,
                 deltaLon,
                 event.getTimestamp(),
-                isNew
+                isNew,
+                isNew ? event.getLat() : null,
+                isNew ? event.getLon() : null
         );
         
         try {
