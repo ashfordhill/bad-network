@@ -4,7 +4,7 @@ services:
     ports:
       - "3000:80"
     environment:
-      VITE_WEBSOCKET_URL: ws://traffic2ui:7990/traffic
+      VITE_WEBSOCKET_URL: ws://localhost:7990/traffic
       VITE_TOPIC: traffic-delta
       VITE_API_URL: http://localhost:8082
     depends_on:

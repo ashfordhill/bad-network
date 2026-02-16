@@ -36,6 +36,9 @@ function App() {
     websocketService.on('connect', () => setConnected(true));
     websocketService.on('disconnect', () => setConnected(false));
     websocketService.on('traffic', handleTrafficData);
+    
+    // Connect to websocket on mount
+    websocketService.connect(websocketUrl);
 
     return () => {
       websocketService.disconnect();
@@ -43,7 +46,7 @@ function App() {
         mapProvider.destroy();
       }
     };
-  }, [mapProvider]);
+  }, [mapProvider, websocketUrl]);
 
   useEffect(() => {
     if (entityManagerRef.current) {

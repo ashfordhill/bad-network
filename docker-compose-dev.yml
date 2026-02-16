@@ -3,7 +3,7 @@ services:
     build:
       context: ./ui
       args:
-        VITE_WEBSOCKET_URL: ${VITE_WEBSOCKET_URL:-ws://traffic2ui:7990/traffic}
+        VITE_WEBSOCKET_URL: ${VITE_WEBSOCKET_URL:-ws://localhost:7990/traffic}
         VITE_TOPIC: ${VITE_TOPIC:-traffic-delta}
         VITE_API_URL: ${VITE_API_URL:-http://localhost:8082}
         VITE_CESIUM_TOKEN: ${VITE_CESIUM_TOKEN:-}
